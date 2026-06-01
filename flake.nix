@@ -8,7 +8,6 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
-      # Use Python 3.11 for PyTorch 2.3.1 compatibility
       python = pkgs.python311;
 
     in

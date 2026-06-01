@@ -37,20 +37,17 @@ python src/ocr_translate_pipeline.py --single-image --image test_data/test1.jpg
 Trained checkpoints live in `trained_models/<date>_queue/<arch>/checkpoint_best.pt`
 and are auto-discovered by `--list-models`.
 
-### Pretrained CTC checkpoints (HuggingFace Hub)
+### Pretrained CTC checkpoint (HuggingFace Hub)
 
-Three CTC variants trained on `Sprakbanken/synthetic_sami_ocr_data` are
-published on the Hub:
+One lightweight CNN-CTC variant trained on `Sprakbanken/synthetic_sami_ocr_data`
+is published on the Hub:
 
-- [`magwrap/sami-ocr-ctc-vgg16`](https://huggingface.co/magwrap/sami-ocr-ctc-vgg16) (~57 MB)
-- [`magwrap/sami-ocr-ctc-vgg19`](https://huggingface.co/magwrap/sami-ocr-ctc-vgg19) (~77 MB)
-- [`magwrap/sami-ocr-ctc-resnet50`](https://huggingface.co/magwrap/sami-ocr-ctc-resnet50) (~92 MB)
+- [`magwrap/cnn-ctc-ocr-sme`](https://huggingface.co/magwrap/cnn-ctc-ocr-sme)
 
-Fetch them into the expected layout with:
+Fetch it into the expected layout with:
 
 ```bash
-python src/ocr/download_models.py            # all three
-python src/ocr/download_models.py --arch ctc_vgg16
+python src/ocr/download_models.py
 ```
 
 ## Training
