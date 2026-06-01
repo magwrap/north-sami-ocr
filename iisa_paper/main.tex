@@ -360,7 +360,7 @@ We evaluate 11 model (7 TrOCR + 4 CTC) variants across different backbones and e
 
 Seven TrOCR variants, pretrained by the National Library of Norway~\cite{enstad2025}, use a Vision Transformer encoder and GPT-2 decoder: \textit{trocr\_smi} (base S\'{a}mi only), \textit{trocr\_smi\_synth} (with synthetic data), \textit{trocr\_smi\_pred} (with auto transcribed augmentation), \textit{trocr\_smi\_pred\_synth} (combined), and three multilingual variants incorporating Norwegian (\textit{trocr\_smi\_nor}, \textit{trocr\_smi\_nor\_pred}, \textit{trocr\_smi\_nor\_pred\_synth}).
 
-Four CTC models are evaluated, our lightweight \textit{ctc\_simple} trained from scratch, plus, to test whether ImageNet pretraining benefits OCR, we also trained three models with pretrained backbones (\textit{ctc\_vgg16}, \textit{ctc\_vgg19}, \textit{ctc\_resnet50}), using the same projection layer and CTC head as \textit{ctc\_simple} (all four variants forego the recurrent encoder). All three exhibited convergence difficulties (Section~\ref{sec:error_analysis}).
+Four CTC models are evaluated, our lightweight \textit{ctc\_simple} trained from scratch, plus, to test whether ImageNet pretraining benefits OCR, we also trained three models with pretrained backbones (\textit{ctc\_vgg16}, \textit{ctc\_vgg19}, \textit{ctc\_resnet50}), using the same projection layer and CTC head as \textit{ctc\_simple} (all four variants do not use the recurrent encoder). All three exhibited convergence difficulties. 
 
 
 \subsection{Training Configuration}
@@ -400,7 +400,7 @@ CER and WER are computed using Levenshtein distance without Unicode normalizatio
 \section{Experiments and Results}
 \label{sec:results}
 
-Table~\ref{tab:main_results} presents benchmark results for the top performing models (underperforming models with CER $>$70\% omitted for clarity. see Section~\ref{sec:error_analysis}). 
+Table~\ref{tab:main_results} presents benchmark results for the top performing models (underperforming models with CER $>$70\% omitted for clarity). 
 \footnotesize
 \begin{table}[tb]
 \centering
