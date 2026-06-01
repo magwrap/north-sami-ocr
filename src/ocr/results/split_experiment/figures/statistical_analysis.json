@@ -1,0 +1,11 @@
+{
+  "n_samples": 20,
+  "mean_original_cer": 0.2702081806097332,
+  "mean_split_cer": 0.03413388758221693,
+  "mean_improvement": 0.23607429302751629,
+  "t_statistic": 6.01728035116331,
+  "p_value": 8.655991014454043e-06,
+  "cohens_d": 1.3455047904874968,
+  "significant_at_05": true,
+  "significant_at_01": true
+}

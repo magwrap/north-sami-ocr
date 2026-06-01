@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor / tooling
+.vscode/
+.claude/
+
+# Local working dirs
+backup/
+checkpoints/
+docs/
+pipeline_benchmark_results/
+
+# Trained model checkpoints (hosted on HuggingFace Hub)
+trained_models/
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.onnx
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz

@@ -1,0 +1,5 @@
+
+  // "3051": {
+  //   "original": "Juoigamuš álgá — Ovtta bártni luohti . ",
+  //   "translation": "A Young Man’s Luohti . "
+  // },

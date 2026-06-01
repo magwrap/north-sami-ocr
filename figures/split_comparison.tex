@@ -1,0 +1,60 @@
+\documentclass[tikz, border=10pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1}
+
+% Colors matching original matplotlib style
+\definecolor{barblue}{HTML}{5A9BD4}
+\definecolor{barorange}{HTML}{F5A65B}
+\definecolor{bargreen}{HTML}{4CAF50}
+
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    width=13cm,
+    height=8cm,
+    ylabel={Character Error Rate (\%)},
+    ylabel style={font=\sffamily},
+    xtick={1, 2, 3},
+    xticklabels={
+        {Short ($\leq$ 80)},
+        {\shortstack{Long ($>$ 80)\\Original}},
+        {\shortstack{Long ($>$ 80)\\Split}}
+    },
+    xticklabel style={font=\sffamily, align=left, yshift=-3pt},
+    yticklabel style={font=\sffamily},
+    enlarge x limits=0.4,
+    ymin=0,
+    ymax=18,
+    ytick={0,2,4,6,8,10,12,14,16},
+    bar, %width=20,
+    clip=false,
+    nodes near coords,
+    nodes near coords style={font=\sffamily\small, above, yshift=2pt},
+    point meta=explicit symbolic,
+    ymajorgrids=true,
+    grid style={gray!30},
+    title={\textbf{CER Comparison by Sentence Length}\\{\small (Short: $n$=981, Long: $n$=67)}},
+    title style={font=\sffamily, align=center},
+    axis lines*=left,
+]
+
+% Bars with explicit labels
+\addplot[fill=barblue, draw=barblue!100!black] coordinates {
+    (1.12, 12.04) [12.04\%]
+};
+\addplot[fill=barorange, draw=barorange!80!black] coordinates {
+    (2, 15.17) [15.17\%]
+};
+\addplot[fill=bargreen, draw=bargreen!80!black] coordinates {
+    (2.88, 8.12) [8.12\%]
+};
+
+% Improvement annotation with arrow (using axis coordinates)
+\draw[->, thick] (axis cs:3.6, 15) -- (axis cs:3.15, 9)
+    node[pos=0, anchor=south west, font=\sffamily\small] {Improvement: +7.05\%};
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

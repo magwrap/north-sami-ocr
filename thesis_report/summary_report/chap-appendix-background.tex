@@ -1,0 +1,132 @@
+\chapter{Background Concepts and Methods}
+\label{appendix:concepts}
+
+\section{Convolutional Neural Networks}
+\label{sec:appendix-cnn}
+
+A Convolutional Neural Network (CNN) is a deep learning architecture that processes images by sliding small, learned filters (kernels) across the input and stacking the resulting activations into feature maps.
+The filters are shared across layers, which reduces the parameter count compared to a fully connected network of the same depth.
+Stacking many convolutional layers lets the network learn a hierarchy of features: simple edges and textures in the early layers, character level structures in the deeper ones.
+
+\paragraph{Feature maps.} Output of the convolutional layer. Each convolutional filter produces a feature map, it's a 2D array of activations indicating where in the image the pattern, the filter has learned (edges, corners, or a diacritical marks), is present. The set of input neurons that project to the same convolution neuron is called its \textit{receptive field}. As the network goes deeper, the receptive field grows, allowing later layers to capture larger spatial patterns. In OCR, this means that deeper layers can learn to recognise whole characters or character combinations, while early layers focus on local features like strokes and diacritics.
+
+\paragraph{Activation Function}
+After each convolution, a non linear activation function (ReLU in this case) is applied element wise to the feature maps. This allows the network to learn complex, non linear relationships between the input pixels and the output features.
+ReLU (Rectified Linear Unit) is a common choice because it mitigates the vanishing gradient problem and promotes sparse activations, which can improve learning efficiency.
+
+\paragraph{Subsampling (Pooling).} Pooling layers downsample feature maps, typically by taking the maximum (max pooling) or average activation value over a small spatial window. They make the representation more compact, enlarge the receptive field of subsequent layers, highlight the most important features, and introduce a small amount of translation tolerance.
+
+\paragraph{Column features (adaptive pooling).} For OCR, the 2D feature maps produced by the CNN must be reshaped into a 1D sequence that downstream sequence models (BiLSTM, Transformer, CTC) can consume. \textit{Adaptive pooling} collapses the vertical axis to height 1, leaving a sequence of column vectors that runs left to right across the image. Each column vector summarises a thin vertical strip of the original image and is treated as one ``timestep'' by the encoder. This trick is what lets a fundamentally 2D convolutional model emit a sequence amenable to CTC.
+
+\section{VGG16 / VGG19}
+\label{sec:appendix-vgg}
+
+VGGNets~\cite{simonyan2015vgg} are a family of deep CNNs, developed by Visual Geometry Group (VGG) which showed that by simply adding more layers (depth), the accuracy of image classification can improve. By  stacking many small 3$\times$3 convolutions, VGG16 and VGG19 (16 and 19 weight layers respectively) became standard pretrained backbones because of their simple, uniform structure.
+
+\section{ResNet50 / ResNet101}
+\label{sec:appendix-resnet}
+
+ResNet~\cite{he2016resnet} introduced residual "skip" connections that let each layer learn a correction to the identity mapping rather than a full transformation. This enables stable training of much deeper networks. ResNet50 and ResNet101 have 50 and 101 weight layers respectively, avoiding the gradient vanishing problems that occur in very deep CNNs.
+
+\section{ImageNet Pretraining and Transfer Learning}
+\label{sec:appendix-pretraining}
+
+The VGG and ResNet backbones used in this pipeline ship with \textit{ImageNet pretrained} weights, meaning they have already been trained on the ImageNet ILSVRC subset (~1.28M images across 1000 categories) that torchvision uses for its pretrained classification models. \textit{Transfer learning} reuses these weights as initialisation for a different downstream task. Like here, for OCR on North S\'{a}mi line images.
+
+\section{BiLSTM}
+\label{sec:appendix-bilstm}
+
+A bidirectional Long Short Term Memory (BiLSTM)~\cite{hochreiter1997lstm} network is a type of Recurrent Neural Network (RNN) that runs two LSTMs over the column features, one left to right, the other right to left, and concatenates their hidden states at each position.
+The RNN is a type of neural network for sequential data processing. They have a hidden state that is updated at each timestep based on the current input and the previous hidden state, allowing them to capture temporal dependencies. However, normal RNNs suffer from the vanishing gradient problem, which makes it difficult to learn long range dependencies.
+The LSTM cell uses learned input, forget, and output gates to retain long range dependencies while suppressing irrelevant context, mitigating the vanishing gradient problem, which is well suited to OCR: predicting the character in a column often benefits from knowing both what came before and what is coming next, for example to disambiguate visually similar diacritics by their typical neighbouring characters in S\'{a}mi morphology.
+
+\section{Transformer Encoder}
+\label{sec:appendix-transformer}
+
+A Transformer encoder~\cite{vaswani2017attention} replaces recurrence with self attention: every position attends to every other position in parallel, weighted by learned compatibility scores. This gives a fully global receptive field over the column features and removes the sequential bottleneck of recurrent models.
+In the pipeline, the Transformer encoder serves as a drop in alternative to the BiLSTM, isolating whether explicit global attention buys more than the LSTM's local bidirectional context for the relatively short column sequences produced by the backbone.
+
+\section{TrOCR}
+\label{sec:appendix-trocr}
+
+TrOCR~\cite{li2023trocr} is a transformer based OCR architecture using a Vision Transformer (ViT) encoder paired with an autoregressive text generation decoder. Rather than treating the image as a sequence of column features (the CRNN approach used by this pipeline), TrOCR splits the image into a grid of fixed size patches and processes them with self attention end to end. The decoder then generates output text token by token, conditioned on the encoded image and on its own previous outputs.
+
+\section{Connectionist Temporal Classification (CTC)}
+\label{sec:appendix-ctc}
+
+Connectionist Temporal Classification (CTC)~\cite{graves2006ctc} is a loss function and decoding scheme for sequence labelling tasks in which the alignment between input frames and output labels is unknown. CTC introduces a special \textit{blank} token and marginalises over all alignments that, after collapsing repeated tokens and removing blanks, produce the target transcription. This removes the need for explicit character level segmentation of the input image, exactly the property needed for variable length OCR lines. At inference time, greedy decoding picks the most likely token at each timestep and applies the same collapse rule to produce the final transcription.
+
+\section{AdamW Optimizer}
+\label{sec:appendix-adamw}
+
+AdamW is the optimiser used across all training runs in this pipeline. Adam, the underlying algorithm, adapts the per parameter learning rate using running averages of recent gradients (a momentum term) and their squared magnitudes (a scale term). This makes it robust on noisy gradients and forgiving of poor initialisation, which is why it has become the de facto default for modern deep learning. The ``W'' variant detaches the weight decay from the adaptive scaling.
+
+\section{Learning Rate (LR), LR Schedulers and Weight Decay}
+\label{sec:appendix-lr}
+
+The \textit{learning rate} controls the step size taken along the gradient direction when updating weights of the model.
+
+\paragraph{Differential learning rates.} Apply different LR multipliers to different parameter groups inside the same optimiser.
+
+\paragraph{LR schedulers.} Change the learning rate over the course of training.
+
+\texttt{ReduceLROnPlateau}, monitors the validation CER and halves the learning rate whenever it stops improving for a fixed number of epochs, so the network starts in an aggressive regime and gradually settles into a finer grained one without manual intervention. \textit{Warmup} works at the other end of training: starting from a tiny learning rate and ramping up over the first few epochs, which prevents large early gradients from destabilising pretrained weights.
+
+\paragraph{Weight decay.} A regulariser that adds a small penalty proportional to the squared magnitude of each weight, gently pulling the network toward simpler solutions. This discourages overfitting and keeps unused weights from drifting to large arbitrary values that do not help generalisation.
+
+\paragraph{Gradient clipping.} Caps the global norm of the gradient vector at a fixed threshold. 
+CTC losses are prone to occasional spikes when the model is briefly very wrong about an alignment. Clipping it stops a single bad batch from blowing up the weights.
+
+\section{Epochs, Batch Size, Training Steps, and Early Stopping}
+\label{sec:appendix-training-loop}
+
+An \textit{epoch} is one complete pass over the training set. The \textit{batch size} is the number of samples whose gradients are averaged before each weight update.
+A \textit{training step} is a single weight update, one batch processed. The number of steps per epoch is therefore the dataset size divided by the batch size.
+
+\textit{Early stopping} halts training when the validation metric has stopped improving for \texttt{patience} epochs, restoring the model from the best checkpoint observed.
+
+\section{Data Augmentation}
+\label{sec:appendix-augmentation}
+
+Data augmentation expands the effective training set by applying random transformations to each sample on the fly: minor rotations, scale jitter, brightness and contrast perturbations, Gaussian blur, and synthetic noise. That way we can synthetically generate a more diverse set of training images.
+
+
+\section{OCR Evaluation Metrics}
+\label{sec:appendix-ocr-metrics}
+
+OCR quality is measured against a reference transcription using string edit metrics. The \textit{Levenshtein distance} between two strings is the minimum number of single character insertions, deletions, or substitutions needed to turn one into the other.
+
+\paragraph{Character Error Rate (CER).} The Levenshtein distance between the predicted and reference strings, divided by the length of the reference in characters. The lower the better.
+
+% A CER of 0\% is perfect; values above 100\% are possible when the prediction is much longer than the target. CER is the headline metric throughout this report.
+
+\paragraph{Word Error Rate (WER).} The same idea but at the word level: edit distance counted in word tokens rather than characters, divided by the reference length in words. WER is harsher than CER, because a single misrecognised character can corrupt an entire word.
+
+\paragraph{Exact Match Accuracy.} The fraction of test samples for which the predicted transcription matches the reference verbatim. A binary, precision metric.
+
+\paragraph{Normalised Accuracy.} Exact match accuracy computed after a normalisation pass (removing punctuation, collapsing repeated whitespace). Useful for separating substantive recognition errors from cosmetic formatting differences.
+
+\section{Machine Translation Metrics}
+\label{sec:appendix-mt-metrics}
+
+\paragraph{n gram.} A contiguous sequence of n tokens. For example, in the sentence ``the cat sat'', the 1 grams are ``the'', ``cat'', and ``sat'', while the 2 grams are ``the cat'' and ``cat sat''. MT metrics often operate on n grams to measure how well the candidate translation matches the reference.
+
+\paragraph{BLEU.} Bilingual Evaluation Understudy. Measures the n gram precision of the candidate translation against one or more references, multiplied by a brevity penalty that discourages overly short outputs. Widely used. Might be coarse for morphologically rich languages where surface forms vary heavily.
+
+\paragraph{chrF.} Character n gram F score~\cite{popovic2015chrf}. Operates on character n grams instead of word n grams, which makes it more forgiving of morphological variation.
+
+\paragraph{TER.} Translation Edit Rate: the number of edits (insertions, deletions, substitutions, shifts) needed to turn the candidate into the reference, normalised by the reference length. Closer to zero is better.
+
+\section{Statistical Significance and Effect Size}
+\label{sec:appendix-statistics}
+
+
+\paragraph{Percentage points (pp).} The arithmetic difference between two percentage values, distinct from a relative percentage change.
+
+\paragraph{Paired t test.} A hypothesis test for whether the mean difference between two paired sets of observations is zero. ``Paired'' means each prediction in condition A has a one to one counterpart in condition B.
+
+\paragraph{p value.} The probability of observing a result at least as extreme as the measured one if the null hypothesis (no true difference) were true. A small p value (conventionally $p < 0.05$) is read as evidence against the null.
+
+\paragraph{Effect size.} A standardised measure of \emph{how large} a difference between two conditions is, independent of sample size. A p value can be tiny merely because the sample is large, even if the underlying effect is negligible, effect sizes report the gap on a scale that is interpretable in its own right.
+
+\paragraph{Cohen's $d$.} A common effect size statistic for the difference between two means: the mean difference between two conditions divided by the pooled standard deviation. It expresses the gap in units of typical variability, so it is comparable across studies and immune to sample size inflation. Conventional rules of thumb: $d \approx 0.2$ small, $0.5$ medium, $0.8$ large.

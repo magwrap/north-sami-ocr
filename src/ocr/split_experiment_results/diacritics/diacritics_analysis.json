@@ -1,0 +1,333 @@
+{
+  "ctc_simple": {
+    "per_char_stats": {
+      "Ŋ": {
+        "correct": 1,
+        "total": 1,
+        "confusions": {},
+        "accuracy": 100.0
+      },
+      "ž": {
+        "correct": 26,
+        "total": 30,
+        "confusions": {
+          "J": 1,
+          "g": 1,
+          "": 2
+        },
+        "accuracy": 86.66666666666667
+      },
+      "ŋ": {
+        "correct": 25,
+        "total": 25,
+        "confusions": {},
+        "accuracy": 100.0
+      },
+      "Ŧ": {
+        "correct": 0,
+        "total": 0,
+        "confusions": {},
+        "accuracy": null
+      },
+      "Č": {
+        "correct": 13,
+        "total": 16,
+        "confusions": {
+          "č": 1,
+          "Å": 1,
+          "Õ": 1
+        },
+        "accuracy": 81.25
+      },
+      "Ž": {
+        "correct": 2,
+        "total": 5,
+        "confusions": {
+          "ž": 2,
+          "Ŷ": 1
+        },
+        "accuracy": 40.0
+      },
+      "Š": {
+        "correct": 11,
+        "total": 13,
+        "confusions": {
+          "B": 1,
+          "": 1
+        },
+        "accuracy": 84.61538461538461
+      },
+      "š": {
+        "correct": 219,
+        "total": 249,
+        "confusions": {
+          "S": 1,
+          "Š": 13,
+          "": 6,
+          "e": 1,
+          "s": 6,
+          "u": 1,
+          "i": 1,
+          "A": 1
+        },
+        "accuracy": 87.95180722891565
+      },
+      "č": {
+        "correct": 95,
+        "total": 113,
+        "confusions": {
+          "Č": 4,
+          "é": 2,
+          "ž": 1,
+          "": 11
+        },
+        "accuracy": 84.070796460177
+      },
+      "Đ": {
+        "correct": 16,
+        "total": 17,
+        "confusions": {
+          "o": 1
+        },
+        "accuracy": 94.11764705882352
+      },
+      "á": {
+        "correct": 1198,
+        "total": 1320,
+        "confusions": {
+          "i": 3,
+          "Á": 25,
+          "": 54,
+          "å": 19,
+          "a": 1,
+          ".": 3,
+          "â": 1,
+          "d": 2,
+          "f": 1,
+          "v": 1,
+          "S": 1,
+          "o": 2,
+          "e": 3,
+          "n": 2,
+          "l": 1,
+          "(": 1,
+          "m": 1,
+          "č": 1
+        },
+        "accuracy": 90.75757575757576
+      },
+      "ŧ": {
+        "correct": 3,
+        "total": 6,
+        "confusions": {
+          "t": 2,
+          "": 1
+        },
+        "accuracy": 50.0
+      },
+      "Á": {
+        "correct": 129,
+        "total": 153,
+        "confusions": {
+          "": 9,
+          "a": 1,
+          "Q": 1,
+          "H": 1,
+          "á": 7,
+          "m": 1,
+          "u": 1,
+          "Â": 1,
+          "f": 1,
+          "ń": 1
+        },
+        "accuracy": 84.31372549019608
+      },
+      "đ": {
+        "correct": 135,
+        "total": 174,
+        "confusions": {
+          "": 9,
+          "l": 5,
+          "E": 2,
+          "G": 1,
+          "d": 18,
+          "á": 1,
+          "Ö": 1,
+          "!": 1,
+          "0": 1
+        },
+        "accuracy": 77.58620689655173
+      }
+    },
+    "overall_stats": {
+      "total_diacritic_chars": 2122,
+      "total_correct": 1873,
+      "overall_accuracy": 88.26578699340246
+    }
+  },
+  "trocr_smi_synth": {
+    "per_char_stats": {
+      "Ŋ": {
+        "correct": 1,
+        "total": 1,
+        "confusions": {},
+        "accuracy": 100.0
+      },
+      "ž": {
+        "correct": 25,
+        "total": 30,
+        "confusions": {
+          "á": 1,
+          "š": 2,
+          "e": 1,
+          "": 1
+        },
+        "accuracy": 83.33333333333334
+      },
+      "ŋ": {
+        "correct": 21,
+        "total": 25,
+        "confusions": {
+          "p": 1,
+          "g": 3
+        },
+        "accuracy": 84.0
+      },
+      "Ŧ": {
+        "correct": 0,
+        "total": 0,
+        "confusions": {},
+        "accuracy": null
+      },
+      "Č": {
+        "correct": 14,
+        "total": 16,
+        "confusions": {
+          "G": 1,
+          "đ": 1
+        },
+        "accuracy": 87.5
+      },
+      "Ž": {
+        "correct": 5,
+        "total": 5,
+        "confusions": {},
+        "accuracy": 100.0
+      },
+      "Š": {
+        "correct": 13,
+        "total": 13,
+        "confusions": {},
+        "accuracy": 100.0
+      },
+      "š": {
+        "correct": 231,
+        "total": 249,
+        "confusions": {
+          "s": 2,
+          "i": 3,
+          "S": 1,
+          " ": 1,
+          "": 4,
+          "á": 3,
+          "b": 1,
+          "č": 2,
+          "l": 1
+        },
+        "accuracy": 92.7710843373494
+      },
+      "č": {
+        "correct": 91,
+        "total": 113,
+        "confusions": {
+          "đ": 3,
+          "i": 4,
+          "": 5,
+          "b": 1,
+          "o": 1,
+          "l": 2,
+          "r": 2,
+          "š": 1,
+          "f": 1,
+          "á": 1,
+          "c": 1
+        },
+        "accuracy": 80.53097345132744
+      },
+      "Đ": {
+        "correct": 16,
+        "total": 17,
+        "confusions": {
+          "đ": 1
+        },
+        "accuracy": 94.11764705882352
+      },
+      "á": {
+        "correct": 1261,
+        "total": 1320,
+        "confusions": {
+          "đ": 4,
+          "â": 6,
+          "": 11,
+          "d": 4,
+          "a": 6,
+          "i": 6,
+          "O": 1,
+          "e": 2,
+          "r": 1,
+          "u": 3,
+          "å": 4,
+          "ä": 1,
+          "é": 2,
+          "h": 1,
+          "t": 2,
+          "š": 2,
+          "ŋ": 1,
+          "f": 1,
+          "j": 1
+        },
+        "accuracy": 95.53030303030303
+      },
+      "ŧ": {
+        "correct": 3,
+        "total": 6,
+        "confusions": {
+          "t": 2,
+          "š": 1
+        },
+        "accuracy": 50.0
+      },
+      "Á": {
+        "correct": 151,
+        "total": 153,
+        "confusions": {
+          "á": 1,
+          "A": 1
+        },
+        "accuracy": 98.69281045751634
+      },
+      "đ": {
+        "correct": 151,
+        "total": 174,
+        "confusions": {
+          "d": 9,
+          "â": 2,
+          "l": 1,
+          "ħ": 1,
+          "Ǒ": 1,
+          "ŧ": 1,
+          "": 5,
+          "č": 1,
+          "r": 1,
+          "k": 1
+        },
+        "accuracy": 86.7816091954023
+      }
+    },
+    "overall_stats": {
+      "total_diacritic_chars": 2122,
+      "total_correct": 1983,
+      "overall_accuracy": 93.44957587181904
+    }
+  }
+}

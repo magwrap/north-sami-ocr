@@ -1,0 +1,18 @@
+{
+  "sme_file": "benchmark_data/source/muitalus-sme-Giellatekno.txt",
+  "eng_file": "benchmark_data/source/muitalus-eng.txt",
+  "sme_cursor": 1,
+  "eng_cursor": 1,
+  "aligned_pairs": [
+    {
+      "sme": "Mon lean okta sápmelaš . ",
+      "eng": "I am a Sámi .",
+      "sme_idx": 0,
+      "eng_idx": 0
+    }
+  ],
+  "deleted_sme": [],
+  "deleted_eng": [],
+  "merged": {},
+  "splits": {}
+}

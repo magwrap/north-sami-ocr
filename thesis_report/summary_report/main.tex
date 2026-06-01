@@ -1,0 +1,191 @@
+\documentclass[a4paper,oneside,11pt]{memoir}
+
+\usepackage[utf8]{inputenc} % input encoding
+\usepackage[T1]{fontenc} % font encoding
+
+\usepackage{graphicx} %to include images/graphics
+\usepackage{amsmath,amssymb} %better math type setting
+\usepackage{listings} %for source code snippets
+\usepackage{textcomp} %for upquote
+\usepackage{xcolor} % nice colors (for source code)
+\usepackage{booktabs} % \toprule \midrule \bottomrule for publication-quality tables
+\usepackage{tabularx} % auto-stretching X columns that wrap long text
+\usepackage{url}      % \url{...} in bibliography entries
+
+\usepackage{tipa}  % Provides phonetic symbols including eng (Ŋ/ŋ)
+
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+
+\usepackage[section]{placeins} % keeps figures within their section
+
+% For special Sami characters
+\usepackage{newunicodechar}
+\DeclareUnicodeCharacter{014A}{\raisebox{0.1ex}{\scalebox{1.3}{\textipa{\ng}}}}  % Ŋ (capital eng - scaled)
+\DeclareUnicodeCharacter{014B}{\textipa{\ng}}  % ŋ (lowercase eng)
+% T-stroke: horizontal bar through the letter (not macron above)
+\newcommand{\tstroke}{\mbox{\ooalign{t\cr\hspace{0.02em}\raisebox{0.49ex}{\rule{0.30em}{0.4pt}}}}}
+\newcommand{\Tstroke}{\mbox{\ooalign{T\cr\hspace{0.04em}\raisebox{0.52ex}{\rule{0.52em}{0.45pt}}}}}
+\DeclareUnicodeCharacter{0166}{\Tstroke}  % Ŧ (T with stroke through)
+\DeclareUnicodeCharacter{0167}{\tstroke}  % ŧ (t with stroke through)
+\DeclareUnicodeCharacter{0110}{\DJ}  % Đ (uses T1's \DJ)
+\DeclareUnicodeCharacter{0111}{\dj}  % đ (uses T1's \dj)
+
+% ============================================================================
+% BENCHMARK RESULTS MACROS - mirrored from the IISA paper preamble
+% Keep these in sync with iisa_paper/main.tex
+% ============================================================================
+% Best TrOCR model (trocr_smi_synth)
+\newcommand{\trocrBestCER}{8.55}
+\newcommand{\trocrBestWER}{28.16}
+\newcommand{\trocrBestCharAcc}{91.56}
+\newcommand{\trocrBestWordAcc}{72.49}
+\newcommand{\trocrBestTime}{12.41}
+\newcommand{\trocrSize}{350}
+
+% Our CNN-CTC model (ctc_simple)
+\newcommand{\preprocessingImgWidth}{800}
+\newcommand{\ctcCER}{12.24}
+\newcommand{\ctcWER}{37.35}
+\newcommand{\ctcCharAcc}{87.72}
+\newcommand{\ctcWordAcc}{62.45}
+\newcommand{\ctcTime}{0.033}
+\newcommand{\ctcSize}{23}
+
+% Speed comparison
+\newcommand{\speedupFactor}{380}
+
+% Other TrOCR variants
+\newcommand{\trocrSmiPredSynthCER}{15.85}
+\newcommand{\trocrSmiPredSynthWER}{45.76}
+\newcommand{\trocrSmiPredSynthWordAcc}{24.14}
+\newcommand{\trocrSmiPredSynthTime}{12.08}
+\newcommand{\trocrSmiNorPredSynthCER}{17.46}
+\newcommand{\trocrSmiNorPredSynthWER}{48.20}
+\newcommand{\trocrSmiNorPredSynthWordAcc}{23.38}
+\newcommand{\trocrSmiNorPredSynthTime}{13.55}
+\newcommand{\trocrSmiCER}{24.12}
+\newcommand{\trocrSmiWER}{63.50}
+\newcommand{\trocrSmiWordAcc}{12.88}
+\newcommand{\trocrSmiTime}{16.23}
+
+% Dataset statistics
+\newcommand{\trainSamples}{276,000}
+\newcommand{\testSamples}{1,048}
+\newcommand{\hfTestSamples}{1,000}
+\newcommand{\hfValidationSamples}{31,000}
+\newcommand{\bookTestSamples}{48}
+\newcommand{\charsetSize}{395}
+
+% Book data results
+\newcommand{\ctcBookCER}{12.21}
+\newcommand{\trocrBookCER}{17.35}
+
+% Domain-specific performance
+\newcommand{\trocrSynthHFCER}{8.33}
+\newcommand{\trocrSynthBookCER}{13.17}
+\newcommand{\trocrSynthDeltaCER}{4.84}
+\newcommand{\trocrSynthBookNormAcc}{45.8}
+\newcommand{\ctcBookNormAcc}{62.5}
+\newcommand{\trocrPredSynthHFCER}{16.09}
+\newcommand{\trocrPredSynthBookCER}{11.00}
+\newcommand{\trocrPredSynthDeltaCER}{5.09}
+\newcommand{\trocrPredSynthBookNormAcc}{43.8}
+
+% Split experiment results
+\newcommand{\splitLongOriginalCER}{15.17}
+\newcommand{\splitLongSplitCER}{8.12}
+\newcommand{\splitShortCER}{12.04}
+\newcommand{\splitImprovement}{7.05}
+\newcommand{\splitPValue}{0.000009}
+\newcommand{\splitCohensD}{1.35}
+\newcommand{\splitSamplesSplit}{20}
+\newcommand{\splitLongCount}{67}
+\newcommand{\splitImproveRate}{95}
+
+% End-to-end pipeline
+\newcommand{\bleuScore}{10.40}
+\newcommand{\chrfScore}{33.85}
+\newcommand{\terScore}{76.30}
+
+\newcommand{\inferencetime}{10-15}
+
+% Derived metrics and constants
+\newcommand{\cerGap}{3.69}
+\newcommand{\sizeRatio}{15}
+\newcommand{\ctcThroughputK}{109}
+\newcommand{\trocrThroughput}{290}
+\newcommand{\millionPagesCtcHours}{10}
+\newcommand{\millionPagesTrocrDays}{144}
+\newcommand{\sentenceLengthThreshold}{80}
+\newcommand{\imageHeight}{32}
+\newcommand{\hiddenDim}{256}
+\newcommand{\lstmOutputDim}{512}
+\newcommand{\numParams}{6}
+\newcommand{\turiYear}{1910}
+\newcommand{\smiSpeakers}{25,000}
+\newcommand{\numCharsVocab}{394}
+\newcommand{\trocrInferenceIntroSec}{12}
+
+\renewcommand{\ttdefault}{pcr} % nicer font for source code
+
+% an example configuration of the 'listings' package
+\lstset{basicstyle=\ttfamily, 
+        keywordstyle=\color{purple}\ttfamily,
+        commentstyle=\color{gray}\ttfamily,
+        stringstyle=\color{orange}\ttfamily,
+        captionpos=b,
+        float=tb,
+        upquote=true,
+}
+
+\chapterstyle{tandh} % configuration of the 'memoir' class
+
+%
+% The actual document starts here
+%
+\begin{document}
+
+\input{frontpage}
+
+\cleardoublepage
+
+\frontmatter
+
+\input{abstract}
+
+\cleardoublepage
+
+\tableofcontents
+
+\mainmatter
+
+%
+% We have one file per chapter:
+%
+% Context in 'chap-context.tex'
+\input{chap-context}
+
+% Goals in 'chap-goals.tex'
+\input{chap-goals}
+
+% Process desc in 'chap-process.tex' 
+\input{chap-process}
+
+% Reflections chapter in 'chap-process-reflections.tex'
+\input{chap-process-reflections}
+
+
+
+\appendix
+
+% Methodological background (CNN/VGG/ResNet/BiLSTM/Transformer/CTC primer)
+\input{chap-appendix-background}
+
+% Deliverables: code, models, conference submissions, supervision log
+\input{chap-appendix}
+
+\bibliographystyle{unsrt}
+\bibliography{mybibliography}
+
+\end{document}

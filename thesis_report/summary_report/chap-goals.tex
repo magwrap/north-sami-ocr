@@ -1,0 +1,49 @@
+\chapter{Goals}
+\label{chap:goals}
+
+While there are some rule based systems for North S\'{a}mi in place, such as those provided by Giellatekno~\cite{giellatekno}, including morphological analysers, dictionaries, grammar parsers and single language corpora. In other digitalisation sectors the S\'{a}mi languages remain underrepresented, which is itself a barrier to heritage digitisation and language revitalisation efforts~\cite{enstad2025}.
+The most accurate publicly available OCR models for North S\'{a}mi are transformer based variants fine tuned by the National Library of Norway on synthetic data and released through the Spr\r{a}kbanken S\'{a}mi OCR collection~\cite{enstad2025,sprakbanken_collection}. However, these models are computationally heavy. They take \trocrInferenceIntroSec{}+ seconds per image on a CPU and around \trocrSize{}~MB of storage memory, which makes them impractical for community driven projects, mobile field documentation, and institutions with limited infrastructure. As shown in Figure~\ref{fig:report-design-space}, there is a clear gap in the design space for models that balance accuracy with deployability, particularly for low resource languages like North S\'{a}mi.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/design_space.pdf}
+    \caption{Design space of North S\'{a}mi OCR models, plotting accuracy against model size (MB) and inference time (seconds). Existing transformer based models cluster in the high accuracy but large size region, while the proposed lightweight CNN-CTC model aims for a target zone of competitive accuracy with significantly reduced size and inference time.}
+    \label{fig:report-design-space}
+\end{figure}
+
+This project aims to explore whether a lightweight OCR can achieve a high accuracy for North S\'{a}mi while allowing practical deployability.
+Additionally, the project tests the out of domain robustness of such lightweight models on historical lexical content, which is crucial for heritage digitisation, and verifies its feasibility as a component in an end to end OCR$\rightarrow$MT pipeline for smart learning and archival indexing use cases. After analysing the benchmarking results, further conjunction based sentence splitting is proposed as a linguistically motivated preprocessing step to mitigate the fixed width input penalty of the lightweight architecture, showing that architectural and linguistic adaptations can work together to improve performance under deployment constraints.
+
+\section{Research Question}
+\label{sec:research-question}
+The main research question guiding this project is: 
+
+\begin{quote}
+\textit{Can a lightweight OCR architecture approach Transformer level accuracy for North S\'{a}mi while enabling practical deployment on modest hardware?}.
+\end{quote}
+
+The emphasis on deployment constraints is a crucial aspect of the project, as it looks into one of the often overlooked parts of research: the practicality and usability of the proposed solutions. The project doesn't focus solely on accuracy, but also looks at ways of mitigating some technological constraints given by the hardware and resource limitations.
+
+\section{Specific Goals}
+\label{sec:contributions}
+
+As listed in the scientific article, the six main contributions of this project are: 
+
+
+\begin{enumerate}
+    \item A lightweight CNN-CTC architecture for North S\'{a}mi OCR, achieving a competitive balance of accuracy and deployability.
+    \item A systematic benchmark comparing the proposed model against 7 TrOCR variants and 3 CTC variants with ImageNet pretrained backbones, demonstrating the tradeoffs between accuracy and computational efficiency.
+    \item A contribution to Sustainable AI through a lightweight CNN-CTC model.
+    \item A linguistically motivated conjunction based sentence splitting method that mitigates the fixed width input penalty of lightweight architectures, improving long sentence accuracy under oracle ground truth conditions, as a proof of concept.
+    \item An end to end OCR$\rightarrow$MT pipeline integrating the proposed model with TartuNLP's North Sámi English API, demonstrating usability for downstream tasks.
+    \item Demonstrating usefulness in 21st century education, AI \& NLP, and next generation robotic systems applied to low resource languages.
+\end{enumerate}
+
+% \begin{enumerate}
+%     \item \textbf{A lightweight CNN--CTC architecture} for North S\'{a}mi OCR that achieves a competitive accuracy/deployability balance: \ctcCharAcc{}\% character accuracy in \ctcSize{}~MB on disk and \ctcTime{}~s per image on CPU (Section~\ref{sec:main-result}).
+%     \item \textbf{A systematic benchmark} comparing the proposed model against 7 TrOCR variants and 3 CTC variants with ImageNet-pretrained backbones, on a shared \testSamples{}-sample test set and a single CPU, isolating the accuracy--efficiency trade-off (Section~\ref{sec:main-result}).
+%     \item \textbf{A contribution to Sustainable AI} through the lightweight CNN--CTC model, running roughly \speedupFactor{}$\times$ faster and at \sizeRatio{}$\times$ smaller size than the strongest TrOCR baseline --- translating to a million-page corpus processable in under \millionPagesCtcHours{}~hours on CPU rather than $\sim$\millionPagesTrocrDays{}~days (Section~\ref{sec:main-result}).
+%     \item \textbf{An end-to-end OCR$\rightarrow$MT pipeline} integrating the proposed model with TartuNLP's North~S\'{a}mi--English machine-translation API~\cite{tartunlp}, scored on a parallel out-of-domain set with BLEU, chrF and TER (Section~\ref{sec:e2e}).
+%     \item \textbf{A linguistically-motivated conjunction-based sentence splitting method} that mitigates the fixed-width input penalty of lightweight architectures, dropping long-sentence CER from \splitLongOriginalCER{}\% to \splitLongSplitCER{}\% (paired test $p = \splitPValue{}$, Cohen's $d = \splitCohensD{}$; Section~\ref{sec:conjunction-split}).
+%     \item \textbf{Demonstrating usefulness in 21st-century education, AI \& NLP and next-generation robotic systems} applied to low-resource languages --- the deployability profile (\ctcSize{}~MB / sub-100~ms) makes the model a candidate for mobile heritage-preservation apps, archival indexing, classroom tooling and joint OCR + reconstruction in everyday-vision settings (Section~\ref{sec:applications}).
+% \end{enumerate}

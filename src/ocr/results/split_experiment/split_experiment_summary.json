@@ -1,0 +1,18 @@
+{
+  "model_name": "ctc_simple",
+  "total_samples": 1048,
+  "samples_split": 20,
+  "samples_not_split": 1028,
+  "overall_original_cer": 0.12236804662427175,
+  "overall_original_wer": 0.37349355743428325,
+  "overall_split_cer": 0.11786281202450997,
+  "overall_split_wer": 0.36626237371388837,
+  "long_count": 67,
+  "long_original_cer": 0.15166790047716205,
+  "long_original_wer": 0.36578337151249174,
+  "long_split_cer": 0.08119796225999304,
+  "long_split_wer": 0.25267470675168996,
+  "short_count": 981,
+  "short_original_cer": 0.1203669353009856,
+  "short_original_wer": 0.37402014505585296
+}

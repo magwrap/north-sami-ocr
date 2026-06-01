@@ -1,0 +1,6 @@
+{
+  "description": "Manually verified alignment anchors to improve hybrid alignment quality",
+  "instructions": "Add verified (sme_idx, eng_idx) pairs here. These will be used as high-confidence anchors.",
+  "total": 0,
+  "anchors": []
+}
