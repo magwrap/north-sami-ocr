@@ -155,12 +155,11 @@ If you use this work, please cite the thesis:
 ```bibtex
 @thesis{musiol2026samiocr,
   author = {Jan Musiol},
-  title  = {Digitalization of Endangered Scripts: An OCR-Translation Pipeline
-            for Low-Resource S\'{a}mi Languages},
+  title  = {TODO},
   school = {University of Southern Denmark,
             The Maersk Mc-Kinney Moeller Institute},
   year   = {2026},
-  type   = {Bachelor's thesis}
+  type   = {TODO}
 }
 ```
 
