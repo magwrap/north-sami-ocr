@@ -167,7 +167,7 @@
 \textbf{S\'{a}mi languages} are a group of nine low-resource languages that belong to the family of Uralic languages. They are spoken in the S\'{a}pmi region, across Norway, Sweden, Finland, and Russia. 
 North S\'{a}mi, the most widely spoken, has approximately $25{,}000$ speakers, yet it remains classified as endangered by UNESCO.
 
-\textbf{Challanges} in Optical Character Recognition (OCR) for North S\'{a}mi range from scarce training data to complex orthographic features, making it a difficult task to streamline the digitalization efforts. Additionally, the language characteristics of S\'{a}mi leads to a large number of inflected word forms, further complicating accurate recognition. While state-of-the-art models like TrOCR achieve high accuracy (\trocrBestCacc\%), their computational demands ($\sim$\trocrSize, $\sim$\trocrBestTime\,s/img inference on CPU) make them ill-fitted for deployment in resource-constrained environments.
+\textbf{Challenges} in Optical Character Recognition (OCR) for North S\'{a}mi range from scarce training data to complex orthographic features, making it a difficult task to streamline the digitalization efforts. Additionally, the language characteristics of S\'{a}mi lead to a large number of inflected word forms, further complicating accurate recognition. While state-of-the-art models like TrOCR achieve high accuracy (\trocrBestCacc\%), their computational demands ($\sim$\trocrSize, $\sim$\trocrBestTime\,s/img inference on CPU) make them ill-fitted for deployment in resource-constrained environments.
 
 % \textbf{Research question.} \emph{Can a lightweight architecture approach
 % Transformer-level accuracy on Northern S\'{a}mi while remaining deployable
@@ -217,7 +217,8 @@ benchmark on AMD Ryzen 5 PRO CPU.
 \textbf{Negative result.} Pretrained VGG-16/19 and ResNet-50 backbones
 did not converge.
 
-\textbf{Metrics Used.} \textbf{OCR:} Character Error Rate (CER), Word Error Rate (WER), Character/Word Accuracy = $100-$CER/WER. \textbf{MT:} BLEU, chrF, TER on \bookTestSamples\ parallel pairs. \textbf{Efficiency:} model size (MB), CPU inference time (s/img).
+\textbf{Metrics Used.} \textbf{OCR:} Character Error Rate (CER), Word Error Rate (WER); Word Acc. $=100-$WER, Char Acc. measured directly ($\approx 100-$CER).
+
 }
 
 
@@ -225,7 +226,7 @@ did not converge.
 \centering
 \includegraphics[width=0.95\linewidth]{figures/model_comparison_sentence_length.pdf}\\[2mm]
 \footnotesize Character accuracy vs.\ sentence length.\\
-The character accuracy drops for longer sentences lines due to the fixed
+The character accuracy drops for longer sentences due to the fixed
 32$\times$800\,px input.\\[3mm]
 }
 
@@ -236,11 +237,11 @@ The character accuracy drops for longer sentences lines due to the fixed
 % o Graphs
 % o Tables
 % o Visual summaries
-\block{4.1 \ Results: Benchmark}{
+\block{3.1 \ Results: Benchmark}{
 
 % ---- Main benchmark table -------------------------------------------------
 \begin{center}
-\small
+\normalsize
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 Model & \shortstack{Char.\\Acc.\ (\%)} & \shortstack{Word\\Acc.\ (\%)} & s/img & Size \\
@@ -254,7 +255,7 @@ trocr\_smi                       & \trocrSmiCharAcc         & \trocrSmiWordAcc  
 \footnotesize $^\ast$\texttt{smi}=S\'{a}mi data, \texttt{pred}=+auto-transcribed, \texttt{synth}=+synthetic pre-training.
 \end{center}
 
-\textbf{CNN-CTC} achieves \ctcCER\% CER (\ctcCacc\% char. acc.). 
+\textbf{CNN-CTC} achieves \ctcCacc\% char. acc.(\ctcCER\% CER).
 
 
 % ---- Recognition example with images --------------------------------------
@@ -311,12 +312,12 @@ trocr\_smi                       & \trocrSmiCharAcc         & \trocrSmiWordAcc  
 % ------------------------------ COLUMN 3 ------------------------------
 \column{0.33}
 
-\block{4.2 Results: Other Findings}{
+\block{3.2 Results: Other Findings}{
 
 % ---- Domain shift table ---------------------------------------------------
 \textbf{Generalization: in vs. out of domain.}\\[2mm]
 \begin{center}
-\small
+\normalsize
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Model & \shortstack{HF CER\\(\%)} & \shortstack{Book CER\\(\%)} & \shortstack{$\Delta$\\(pp)} \\
@@ -325,10 +326,11 @@ trocr\_smi\_synth          & \textbf{\trocrSynthHFCER}  & \trocrSynthBookCER    
 \textbf{ctc\_simple (ours)}& \ctcCER                    & \ctcBookCER                & \textbf{$-0.03$} \\
 trocr\_smi\_pred\_synth    & \trocrPredSynthHFCER       & \textbf{\trocrPredSynthBookCER} & $-$\trocrPredSynthDeltaCER \\
 \bottomrule
-\end{tabular}
+\end{tabular}\\[2mm]
+\footnotesize{HF = HuggingFace, in-domain. Book = out-of-domain historical text.}
 \end{center}
 \vspace{1mm}
-The best TrOCR degrades by \trocrSynthDeltaCER\,pp on out-of-domain historical
+The best TrOCR degrades by \trocrSynthDeltaCER\,pp on historical
 text, while CNN-CTC is stable (\ctcCER\% $\to$ \ctcBookCER\%).
 
 % ---- Conjunction-splitting figure -----------------------------------------
@@ -349,13 +351,13 @@ BLEU \bleuScore, chrF \chrfScore, TER \terScore.
 % o Key outcomes
 % o Implications
 % o Future work
-\block{5.\ Conclusion \& Future Work}{
+\block{4.\ Conclusion \& Future Work}{
 
 
-\textbf{Key Outcomes.} The CNN-CTC achieves \ctcCacc\% character accuracy. The evaluation accuracy barely moves between synthetic and historical book text (\ctcCER\% $\to$ \ctcBookCER\%). It gives an estimated throughput of $\sim$\throughputCtc\ img/h. The OCR$\to$MT pipeline achieves BLEU \bleuScore\ on the \bookTestSamples\ parallel sentences and conjunction-based splitting recovers $\sim$7\,pp CER on long sentences.
+\textbf{Key Outcomes.} The CNN-CTC achieves \ctcCacc\% character accuracy. The evaluation accuracy barely moves between synthetic and historical book text (\ctcCER\% $\to$ \ctcBookCER\%). Yields an estimated throughput of $\sim$\throughputCtc\ img/h. The OCR$\to$MT pipeline achieves BLEU \bleuScore\ on the \bookTestSamples\ parallel sentences and conjunction-based splitting recovers $\sim$7\,pp CER on long sentences.
 
 \textbf{Implications.} The CNN-CTC model trails the best TrOCR by only \cerAccGap\,pp
-CER while being roughly \sizeRatio$\times$ smaller and \speedupFactor$\times$ faster, making it worthwhile for resource-constrained deployment. The in and out of domain accuracy stability lacks sufficient statistical power for concrete conclusions but it might suggest better lightweight generalisation. The MT quality indicates the need for improved english translation models for S\'{a}mi. Conjunction-based splitting proved to be a valid preprocessing proof-of-concept.
+character accuracy while being roughly \sizeRatio$\times$ smaller and \speedupFactor$\times$ faster, making it worthwhile for resource-constrained deployment. The in and out of domain accuracy stability lacks sufficient statistical power for concrete conclusions but it might suggest better lightweight generalisation. The MT quality indicates the need for improved English translation models for S\'{a}mi. Conjunction-based splitting proved to be a valid preprocessing proof-of-concept.
 
 \textbf{Future Work:} Use real scanned documents, layout analysis for full-page processing, morphological post-correction, mobile / edge deployment for field digitization
 
