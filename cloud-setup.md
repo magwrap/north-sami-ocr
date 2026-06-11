@@ -2,21 +2,20 @@
 
 ### 1. Clone the repo
 
-Public HTTPS (after public release):
+Public HTTPS:
 ```shell
-git clone https://github.com/<your-user>/sami-ocr.git
+git clone https://github.com/<your-user>/north-sami-ocr.git
 ```
 
-SSH (recommended if you have keys set up):
+SSH:
 ```shell
-git clone git@github.com:<your-user>/sami-ocr.git
+git clone git@github.com:<your-user>/north-sami-ocr.git
 ```
 
-Private repo via Personal Access Token (only if the repo is still private):
+Personal Access Token (depricated, the repo is no longer private):
 ```shell
-git clone https://<YOUR_GITHUB_PAT>@github.com/<your-user>/sami-ocr.git
+git clone https://<YOUR_GITHUB_PAT>@github.com/<your-user>/north-sami-ocr.git
 ```
-Replace `<YOUR_GITHUB_PAT>` with a token created at https://github.com/settings/tokens with `repo` scope. Do not commit the URL with the token embedded.
 
 ### 2. Install Nix
 - https://nixos.wiki/wiki/Nix_Installation_Guide
