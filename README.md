@@ -1,9 +1,39 @@
-# Northern Sami OCR + Translation
+# North Sámi OCR + Translation
 
-OCR for Northern Sami text with automatic English translation
-([TartuNLP](https://api.tartunlp.ai), `sme → eng`).
-Supports pre-trained TrOCR models from Sprakbanken and custom-trained modular
-CTC architectures.
+Lightweight CNN-CTC OCR for North Sámi (`sme`), with optional English
+translation via [TartuNLP](https://api.tartunlp.ai/translation/v2)
+([source](https://github.com/TartuNLP/translation-api)).
+
+Bachelor thesis project at the University of Southern Denmark - Musioł (student), Varde, Heredia (supervisors), in SDU's report-plus-article format. The scientific
+article was accepted at **IISA 2026** as *"Lightweight OCR in North Sámi
+Heritage Digitization for Smart Learning"*, an extended abstract of the
+same work was accepted to the **SCAI 2026** poster track.
+
+- Summary report: [`thesis_report/`](./thesis_report/)
+- IISA paper sources: [`iisa_paper/`](./iisa_paper/)
+- SCAI extended abstract: [`scai_paper/`](./scai_paper/)
+- SCAI poster: [`scai_poster/`](./scai_poster/)
+- Pretrained checkpoint: [`magwrap/cnn-ctc-ocr-sme`](https://huggingface.co/magwrap/cnn-ctc-ocr-sme)
+
+![North Sámi text and special diacritics](./figures/combined_example.png)
+
+## Headline results
+
+Benchmarked on 1,048 line images (1,000 in-domain Språkbanken synthetic +
+48 synthetically rendered sentences from Johan Turi's 1910 *Muitalus
+sámiid birra*); CPU inference on AMD Ryzen 5 PRO.
+
+| Model                       | Char acc | Word acc |   s/img | Size   |
+|-----------------------------|---------:|---------:|--------:|-------:|
+| `trocr_smi_synth` (best TrOCR) | 91.45 %  | 71.84 %  |   12.41 | 350 MB |
+| **`ctc_simple` (ours)**     | **87.76 %** | 62.65 % | **0.033** | **23 MB** |
+| `trocr_smi_pred_synth`      | 84.15 %  | 54.24 %  |   12.08 | 350 MB |
+| `trocr_smi`                 | 75.88 %  | 36.50 %  |   16.23 | 350 MB |
+
+Our CNN-CTC trails the best TrOCR by 3.69 pp CER while being ~15× smaller
+and ~380× faster (~109k img/h vs ~290 img/h). It also stays stable on
+out-of-domain historical text (12.24 % → 12.21 % CER), where the best
+TrOCR degrades by 4.84 pp.
 
 ## Quick Start
 
@@ -25,7 +55,7 @@ python src/ocr_translate_pipeline.py --single-image --image test_data/test1.jpg
 ## Models
 
 **TrOCR (pre-trained, no training needed):** 7 variants from
-[Sprakbanken](https://huggingface.co/Sprakbanken) — `trocr_smi`, `trocr_smi_nor`,
+[Språkbanken](https://huggingface.co/Sprakbanken) — `trocr_smi`, `trocr_smi_nor`,
 `trocr_smi_pred`, `trocr_smi_nor_pred`, `trocr_smi_synth`,
 `trocr_smi_pred_synth` (best), `trocr_smi_nor_pred_synth`.
 
@@ -33,6 +63,13 @@ python src/ocr_translate_pipeline.py --single-image --image test_data/test1.jpg
 15 combinations of {SimpleCNN, VGG16, VGG19, ResNet50, ResNet101} ×
 {None, BiLSTM, Transformer}, e.g. `ctc_simple`, `crnn_vgg16`,
 `transformer_resnet50`.
+
+The winning configuration from the paper is `ctc_simple`: a 7-layer CNN
+backbone (64 → 128 → 256² → 512³ channels) on 32 × 800 px grayscale
+inputs, adaptive-pooled and projected to 256-d, decoded with CTC over a
+395-symbol vocabulary. Pretrained ImageNet backbones (VGG-16/19,
+ResNet-50) failed to converge in our training runs — a negative result
+documented in the paper.
 
 Trained checkpoints live in `trained_models/<date>_queue/<arch>/checkpoint_best.pt`
 and are auto-discovered by `--list-models`.
@@ -78,6 +115,20 @@ python src/ocr_translate_pipeline.py --single-image \
     --weights trained_models/2026-03-28_queue/crnn_vgg16/checkpoint_best.pt
 ```
 
+## Reproducing the IISA paper
+
+| Paper artifact                                  | Where in the repo                                  |
+|-------------------------------------------------|----------------------------------------------------|
+| Main benchmark (Table II / III)                 | `src/ocr/benchmark.py`                             |
+| OCR → MT pipeline (BLEU/chrF/TER)               | `src/ocr_translate_pipeline.py`, `src/metrics.py`  |
+| Conjunction-based sentence splitting experiment | `experiments/` + `src/ocr/` preprocessing utils    |
+| Historical book test set (48 Turi sentences)    | `benchmark_data/account_of_sami/`                  |
+| Sentence-length / domain-shift analysis         | `src/ocr/` analysis scripts, figures in `figures/` |
+
+Results macros (the exact numbers cited in the paper) are defined at the
+top of [`iisa_paper/main.tex`](./iisa_paper/main.tex) and regenerated
+from `benchmark_results.json`.
+
 ## Project Structure
 
 ```
@@ -119,7 +170,7 @@ Training data is fetched on demand from
 and is not stored in the repository.
 
 Benchmark corpus (`benchmark_data/`) is sourced from publicly available
-Northern Sami / English material — see `benchmark_data/about-data.md` for
+North Sámi / English material — see `benchmark_data/about-data.md` for
 the per-source URLs and licensing notes (Muitalus, Giellatekno, Bokselskap).
 
 ## Reproducibility
@@ -144,26 +195,53 @@ the per-source URLs and licensing notes (Muitalus, Giellatekno, Bokselskap).
 - **HuggingFace download fails:** set `HF_HUB_DISABLE_SYMLINKS_WARNING=1`
   and check `~/.cache/huggingface/` permissions.
 
+## Limitations & good entry points for future work
+
+All training and evaluation used synthetic line renderings — robustness
+to physical scan degradation (faded ink, paper damage, skew) is
+untested. Line segmentation is assumed; the 800-px fixed input width
+constrains very long lines. Models are pure vision OCR with no
+morphological post-correction. Good directions for follow-up work:
+
+- **Real scans.** Collect and benchmark on a corpus of physically
+  scanned Sámi documents to measure the synthetic → real gap.
+- **Layout analysis.** Wrap `ctc_simple` with a page-level segmenter
+  (line detection, de-skewing) for full-page document processing.
+- **Morphological post-correction.** Integrate Giellatekno's North Sámi
+  analyzer to repair rare inflected forms.
+- **Edge / mobile deployment.** The 23 MB checkpoint is well-suited to
+  on-device inference; an Android / iOS demo would close the loop on
+  the paper's deployment claim.
+
 ## License
 
 This project is released under the [MIT License](./LICENSE).
 
 ## Citation
 
-If you use this work, please cite the thesis:
+If you use this work, please cite the IISA 2026 paper:
 
 ```bibtex
-@thesis{musiol2026samiocr,
-  author = {Jan Musiol},
-  title  = {TODO},
-  school = {University of Southern Denmark,
-            The Maersk Mc-Kinney Moeller Institute},
-  year   = {2026},
-  type   = {TODO}
+@inproceedings{musiol2026samiocr,
+  author    = {Jan Musio{\l} and Aparna S. Varde and Juan Heredia},
+  title     = {Lightweight {OCR} in North {S\'{a}mi} Heritage Digitization
+               for Smart Learning},
+  booktitle = {Proc.\ 17th International Conference on Information,
+               Intelligence, Systems and Applications (IISA)},
+  year      = {2026}
 }
 ```
 
-Related work / acknowledgements:
+## Acknowledgments
 
-- Dataset: [Sprakbanken Northern Sami OCR](https://huggingface.co/Sprakbanken)
-- Translation backend: [TartuNLP](https://api.tartunlp.ai)
+- **Språkbanken / National Library of Norway** — synthetic Sámi OCR
+  dataset and pretrained TrOCR variants
+  ([Hugging Face](https://huggingface.co/Sprakbanken)).
+- **Giellatekno (UiT The Arctic University of Norway)** — SIKOR corpus
+  and Sámi language tooling.
+- **TartuNLP (University of Tartu)** — North Sámi → English neural MT
+  API: [`api.tartunlp.ai/translation/v2`](https://api.tartunlp.ai/translation/v2)
+  ([TartuNLP/translation-api](https://github.com/TartuNLP/translation-api)).
+- Compute provided by the University of Southern Denmark. A. Varde
+  acknowledges Novo Nordisk Foundation grant NNF25OC0110035 in
+  Sustainable AI.
