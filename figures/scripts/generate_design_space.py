@@ -31,7 +31,7 @@ TARGET_ACC_MAX = 95.0
 # Measured competitor numbers (mirror the macros in main.tex).
 # (label, size_MB, char_accuracy_pct, latency_sec_per_image, annotation_offset)
 COMPETITORS = [
-    ("TrOCR (smi+synth)",      350, 91.56, 12.41, ( 10,  6)),
+    ("TrOCR (smi+synth)",      350, 91.45, 12.41, ( 10,  6)),
     ("TrOCR (smi+pred+synth)", 350, 84.15, 12.08, ( 10,  0)),
     ("TrOCR (smi only)",       350, 75.88, 16.23, ( 10, -6)),
 ]
