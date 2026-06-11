@@ -52,7 +52,7 @@
 \newcommand{\trocrBestCER}{8.55}
 % \newcommand{\trocrBestWER}{27.51}
 \newcommand{\trocrBestWER}{28.16}
-\newcommand{\trocrBestCharAcc}{91.56}
+\newcommand{\trocrBestCharAcc}{91.45}  % 100 - CER (8.55)
 \newcommand{\trocrBestWordAcc}{71.84}  % 100 - WER (28.16)
 \newcommand{\trocrBestTime}{12.41}
 \newcommand{\trocrSize}{350}
@@ -62,7 +62,7 @@
 \newcommand{\ctcCER}{12.24}
 % \newcommand{\ctcWER}{37.55}
 \newcommand{\ctcWER}{37.35}
-\newcommand{\ctcCharAcc}{87.72}
+\newcommand{\ctcCharAcc}{87.76}  % 100 - CER (12.24)
 \newcommand{\ctcWordAcc}{62.65}  % 100 - WER (37.35)
 \newcommand{\ctcTime}{0.033}
 \newcommand{\ctcSize}{23}
@@ -433,7 +433,7 @@ $^*$Word Acc. = 100 - WER (word-level correctness). \texttt{smi}=S\'{a}mi data, 
 
 According to our benchmarks, the best-performing TrOCR variant (trocr\_smi\_synth)  % redundant?
 achieves \trocrBestCharAcc\% character accuracy and \trocrBestWordAcc\% word accuracy, establishing the state of the art for North S\'{a}mi OCR. However, this accuracy comes at significant computational cost: $\sim \trocrBestTime{}$  seconds per image on CPU and a \trocrSize{}MB model file.
-Our lightweight ctc\_simple model achieves \ctcCharAcc{}\% character accuracy, trailing the best Transformer by \cerGap{}\,pp in CER (\ctcCER{}\% vs \trocrBestCER{}\%)\footnote{Character accuracy is measured directly and does not equal $100-\textrm{CER}$, since CER also counts insertions.}, while providing dramatic efficiency gains: \speedupFactor $\times$ faster inference (\ctcTime{}s vs \trocrBestTime{}s per image) and \sizeRatio{}$\times$ smaller model size (\ctcSize{}MB vs \trocrSize{}MB). This translates to a throughput of approximately \ctcThroughputK{},000 images per hour compared to TrOCR's \trocrThroughput{} images per hour, a significant difference for digitization projects.
+Our lightweight ctc\_simple model achieves \ctcCharAcc{}\% character accuracy (computed as $100-\textrm{CER}$), trailing the best Transformer by \cerGap{}\,pp in CER (\ctcCER{}\% vs \trocrBestCER{}\%), while providing dramatic efficiency gains: \speedupFactor $\times$ faster inference (\ctcTime{}s vs \trocrBestTime{}s per image) and \sizeRatio{}$\times$ smaller model size (\ctcSize{}MB vs \trocrSize{}MB). This translates to a throughput of approximately \ctcThroughputK{},000 images per hour compared to TrOCR's \trocrThroughput{} images per hour, a significant difference for digitization projects.
 % Note: In our evaluation, trocr_smi_synth outperformed trocr_smi_pred_synth, reversing the Språkbanken ranking.
 
 \subsection{Generalization to Historical Text}
