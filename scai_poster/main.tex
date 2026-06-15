@@ -164,8 +164,7 @@
 % o Motivation
 % o Objectives
 \block{1.\ Background \& Motivation}{
-\textbf{S\'{a}mi languages} are a group of nine low-resource languages that belong to the family of Uralic languages. They are spoken in the S\'{a}pmi region, across Norway, Sweden, Finland, and Russia. 
-North S\'{a}mi, the most widely spoken, has approximately $25{,}000$ speakers, yet it remains classified as endangered by UNESCO.
+\textbf{S\'{a}mi languages} are a group of nine low-resource Uralic languages spoken across Northern Europe. Northern S\'{a}mi, the most widely spoken, has approximately $25{,}000$ speakers and is classified as endangered by UNESCO.
 
 \textbf{Challenges} in Optical Character Recognition (OCR) for North S\'{a}mi range from scarce training data to complex orthographic features, making it a difficult task to streamline the digitalization efforts. Additionally, the language characteristics of S\'{a}mi lead to a large number of inflected word forms, further complicating accurate recognition. While state-of-the-art models like TrOCR achieve high accuracy (\trocrBestCacc\%), their computational demands ($\sim$\trocrSize, $\sim$\trocrBestTime\,s/img inference on CPU) make them ill-fitted for deployment in resource-constrained environments.
 
@@ -180,13 +179,33 @@ North S\'{a}mi, the most widely spoken, has approximately $25{,}000$ speakers, y
 \small (a) Example sentence from Johan Turi's \emph{Muitalus s\'{a}miid birra} (1910). (b) Seven S\'{a}mi-specific diacritics that distinguish the orthography.
 }
 
+\block{Architecture}{
+\centering
+\includegraphics[width=0.85\linewidth]{figures/architecture_tikz.pdf}
+\small CNN-CTC: 32$\times$800\,px input $\to$ CNN Backbone $\to$ Adaptive Pooling $\to$ Projection Layer $\to$ CTC head $\to$ Decoded Sequence.
+}
+
+
 % Methods / Methodology
 % o Experimental setup
 % o Workflow or algorithms
 % o Diagrams and illustrations
+
+
+
+
+% ------------------------------ COLUMN 2 ------------------------------
+\column{0.34}
+
+
+
 \block{2. Data, Methods \& Metrics}{
 \textbf{Training} data was Spr\r{a}kbanken synthetic S\'{a}mi OCR dataset
-(National Library of Norway), $\sim$307k line images (276k training + 31k hyperparameter tuning), 32$\times$800px.  \textbf{Evaluation} data used \benchmarkSamples\ samples: \hfTestSamples\ in-domain synthetic lines (Spr\r{a}kbanken validation split) + \bookTestSamples\ parallel Northern S\'{a}mi--English sentences from Turi's 1910 "An Account of S\'{a}mi".
+(National Library of Norway), $\sim$307k line images (276k training + 31k hyperparameter tuning), 32$\times$800px. 
+
+
+\vspace{8mm}
+\textbf{Evaluation} data used \benchmarkSamples\ samples: \hfTestSamples\ in-domain synthetic lines (Spr\r{a}kbanken validation split) + \bookTestSamples\ parallel Northern S\'{a}mi--English sentences from Turi's 1910 "An Account of S\'{a}mi".
 
 % \vspace{8mm}
 % \begin{center}
@@ -200,7 +219,7 @@ North S\'{a}mi, the most widely spoken, has approximately $25{,}000$ speakers, y
 
 %   \small Two Spr\r{a}kbanken synthetic samples shown as the model sees them.
 % \end{center}
-
+\vspace{8mm}
 \textbf{Pipeline} - a lightweight, modular OCR$\rightarrow$MT:
 \begin{enumerate}
   \item Image preprocessing (grayscale, 32$\times$800 px)
@@ -209,35 +228,28 @@ North S\'{a}mi, the most widely spoken, has approximately $25{,}000$ speakers, y
   \item CTC decoder over a 395-symbol vocabulary
   \item Translation via TartuNLP API
 \end{enumerate}
+\vspace{8mm}
+\textbf{Training.} AdamW (lr $10^{-4}$), batch 32, 100 epochs with early stopping, CTC loss, trained on a single NVIDIA V100. Inference benchmark on AMD Ryzen 5 PRO CPU.
 
-\textbf{Training.} AdamW (lr $10^{-4}$), batch 32, 100 epochs with
-early stopping, CTC loss, trained on a single NVIDIA V100. Inference
-benchmark on AMD Ryzen 5 PRO CPU.
+\vspace{8mm}
+\textbf{Negative result.} Pretrained VGG-16/19 and ResNet-50 backbones did not converge.
 
-\textbf{Negative result.} Pretrained VGG-16/19 and ResNet-50 backbones
-did not converge.
-
+\vspace{8mm}
 \textbf{Metrics Used.} \textbf{OCR:} Character Error Rate (CER), Word Error Rate (WER); Word Acc. $=100-$WER, Char Acc. measured directly ($\approx 100-$CER).
 
 }
 
 
-\block{Accuracy vs. Sentence Length}{
-\centering
-\includegraphics[width=0.95\linewidth]{figures/model_comparison_sentence_length.pdf}\\[2mm]
-\footnotesize Character accuracy vs.\ sentence length.\\
-The character accuracy drops for longer sentences due to the fixed
-32$\times$800\,px input.\\[3mm]
-}
-
-% ------------------------------ COLUMN 2 ------------------------------
-\column{0.34}
-
 % Results and Findings
 % o Graphs
 % o Tables
 % o Visual summaries
-\block{3.1 \ Results: Benchmark}{
+
+\block{3.1 Results: Benchmark}{
+
+\textbf{Key result:} CNN-CTC achieves \ctcCacc\% accuracy (\ctcCER\% CER) with the fastest inference and smallest model.
+\vspace{2mm}
+
 
 % ---- Main benchmark table -------------------------------------------------
 \begin{center}
@@ -251,16 +263,43 @@ trocr\_smi\_synth$^\ast$         & \textbf{\trocrBestCacc} & \textbf{\trocrBestW
 trocr\_smi\_pred\_synth$^\ast$   & \trocrPredSynthCharAcc   & \trocrPredSynthWordAcc      & \trocrPredSynthTime & \trocrSize \\
 trocr\_smi                       & \trocrSmiCharAcc         & \trocrSmiWordAcc            & \trocrSmiTime    & \trocrSize \\
 \bottomrule
-\end{tabular}\\[2mm]
+\end{tabular}\\[1mm]
 \footnotesize $^\ast$\texttt{smi}=S\'{a}mi data, \texttt{pred}=+auto-transcribed, \texttt{synth}=+synthetic pre-training.
 \end{center}
 
-\textbf{CNN-CTC} achieves \ctcCacc\% char. acc.(\ctcCER\% CER).
 
-
-% ---- Recognition example with images --------------------------------------
+% ---- Domain shift ---------------------------------------------------------
+\vspace{20mm}
 \begin{center}
-\textit{Example predictions - ground truth, and error types.} %\vspace{2mm}
+\textbf{Generalization (in-domain vs. out-of-domain)}
+\end{center}
+\vspace{1mm}
+\textbf{Key result:} TrOCR degrades by \trocrSynthDeltaCER\,pp, while CNN-CTC remains stable (\ctcCER\% $\rightarrow$ \ctcBookCER\%).
+
+\begin{center}
+\normalsize
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & \shortstack{HF CER\\(\%)} & \shortstack{Book CER\\(\%)} & $\Delta$ (pp) \\
+\midrule
+trocr\_smi\_synth          & \textbf{\trocrSynthHFCER}  & \trocrSynthBookCER         & +\trocrSynthDeltaCER \\
+\textbf{ctc\_simple (ours)}& \ctcCER                    & \ctcBookCER                & \textbf{-0.03} \\
+trocr\_smi\_pred\_synth    & \trocrPredSynthHFCER       & \textbf{\trocrPredSynthBookCER} & -\trocrPredSynthDeltaCER \\
+\bottomrule
+\end{tabular}\\[1mm]
+\footnotesize HF = in-domain, Book = historical out-of-domain.
+\end{center}
+
+
+% ---- Recognition example --------------------------------------------------
+
+
+\vspace{20mm}
+\begin{center}
+\textbf{Example predictions (ground truth vs. prediction)}
+\end{center}
+\vspace{-10mm}
+\begin{center}
 \begin{tabular}{>{\centering\arraybackslash}p{\linewidth}}
 \toprule
 \textbf{Correct Recognition (CER = 0\%)} \\
@@ -268,13 +307,13 @@ trocr\_smi                       & \trocrSmiCharAcc         & \trocrSmiWordAcc  
 \includegraphics[width=0.92\linewidth]{./figures/ground_truth/correct2.jpg} \\
 \small{\textbf{Ground Truth:}  \textit{mij\'{a}v juohkkal\'{a}hk\'{a}j kreatijvvan.}} \\
 \small{
-\textbf{Prediction:} \textit{mij\'{a}v juohkkal\'{a}hk\'{a}j kreatijvvan.}} \\
+\textbf{Prediction:} \textit{mij\'{a}v juohkkal\'{a}hk\'{a}j kreatijvvan.}} \\[12mm]
 \midrule
 \textbf{Diacritical Errors (CER = 8.3\%)} \\
 \midrule
 \includegraphics[width=0.92\linewidth]{./figures/ground_truth/diacritical_errors_new.jpg} \\
 \small{\textbf{Ground Truth:} \textit{ođđasis eal\'{a}skahttojuvvon) Suohkana h\'{a}lddahusla\v{s}}} \\ %\dj\dj 
-\small{\textbf{Prediction:} \textit{oddasis eal\'{a}skahttojuvvon) Duohkama h\'{a}lddahusla\v{s}}} \\
+\small{\textbf{Prediction:} \textit{oddasis eal\'{a}skahttojuvvon) Duohkama h\'{a}lddahusla\v{s}}} \\[12mm]
 \midrule
 \textbf{Uppercase Text Errors (CER = 29.6\%)} \\
 \midrule
@@ -286,65 +325,49 @@ trocr\_smi                       & \trocrSmiCharAcc         & \trocrSmiWordAcc  
 \bottomrule
 \end{tabular}
 \end{center}
-
-% \begin{tabular}{c}
-% \includegraphics[width=0.92\linewidth]{figures/correct2.jpg} \\[1mm]
-% \footnotesize GT: \textit{mij\'{a}v juohkkal\'{a}hk\'{a}j kreatijvvan.} \\
-% \footnotesize Pred: \textit{mij\'{a}v juohkkal\'{a}hk\'{a}j kreatijvvan.} \quad \textbf{CER\,=\,0\%} \\[4mm]
-% \includegraphics[width=0.92\linewidth]{figures/diacritical_errors.jpg} \\[1mm]
-% \footnotesize GT: \textit{o\dj\dj asis eal\'{a}skahttojuvvon) Suohkana h\'{a}lddahusla\v{s}} \\
-% \footnotesize Pred: \textit{oddasis eal\'{a}skahttojuvvon) Duohkama h\'{a}lddahusla\v{s}} \quad \textbf{CER\,=\,8.3\%} \\
-% \end{tabular}
-% \end{center}
-% \footnotesize Diacritic stripping (\dj$\rightarrow$d) and case-confusable shapes
-% account for most residual errors.\\[4mm]
-
 }
-
-\block{Architecture}{
-\centering
-\includegraphics[width=0.93\linewidth]{figures/architecture_tikz.pdf}
-\small CNN-CTC: 32$\times$800\,px input $\to$ CNN Backbone $\to$ Adaptive Pooling $\to$ Projection Layer $\to$ CTC head $\to$ Decoded Sequence.
-}
-
-
 
 % ------------------------------ COLUMN 3 ------------------------------
 \column{0.33}
 
-\block{3.2 Results: Other Findings}{
 
-% ---- Domain shift table ---------------------------------------------------
-\textbf{Generalization: in vs. out of domain.}\\[2mm]
+\block{3.2 Results: Other Findings}{
+\vspace{-5mm}
 \begin{center}
-\normalsize
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Model & \shortstack{HF CER\\(\%)} & \shortstack{Book CER\\(\%)} & \shortstack{$\Delta$\\(pp)} \\
-\midrule
-trocr\_smi\_synth          & \textbf{\trocrSynthHFCER}  & \trocrSynthBookCER         & $+$\trocrSynthDeltaCER \\
-\textbf{ctc\_simple (ours)}& \ctcCER                    & \ctcBookCER                & \textbf{$-0.03$} \\
-trocr\_smi\_pred\_synth    & \trocrPredSynthHFCER       & \textbf{\trocrPredSynthBookCER} & $-$\trocrPredSynthDeltaCER \\
-\bottomrule
-\end{tabular}\\[2mm]
-\footnotesize{HF = HuggingFace, in-domain. Book = out-of-domain historical text.}
+\textbf{Character accuracy vs.\ sentence length.}
 \end{center}
-\vspace{1mm}
-The best TrOCR degrades by \trocrSynthDeltaCER\,pp on historical
-text, while CNN-CTC is stable (\ctcCER\% $\to$ \ctcBookCER\%).
+The character accuracy drops for longer sentences due to the fixed
+32$\times$800\,px input.\\
+
+
+
+\centering
+\vspace{-15mm}
+\includegraphics[width=0.85\linewidth]{figures/model_comparison_sentence_length.pdf}\\[2mm]
+\vspace{-5mm}
 
 % ---- Conjunction-splitting figure -----------------------------------------
-\textbf{Conjunction-based splitting on long sentences.}\\[1mm]
+
 \begin{center}
-\includegraphics[width=0.95\linewidth]{figures/split_comparison.pdf}
+\textbf{Conjunction-based splitting on long sentences}
+\end{center}
+
+\flushleft
+End-to-end OCR$\to$MT: On \bookTestSamples\ book sentences:
+BLEU \bleuScore, chrF \chrfScore, TER \terScore.
+
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figures/split_comparison.pdf}
 \footnotesize{Linguistically motivated preprocessing splitting at S\'{a}mi conjunctions (\textit{ja}, \textit{muhto},
 \textit{go}, \ldots) cuts long-sentence CER from \splitLongOriginalCER\%
 to \splitLongSplitCER\%.}
 \end{center}
 
-\textbf{End-to-end OCR$\to$MT.} On \bookTestSamples\ book sentences:
-BLEU \bleuScore, chrF \chrfScore, TER \terScore.
+
+
 }
+
 
 
 % 5. Discussion / Conclusion
@@ -369,19 +392,23 @@ character accuracy while being roughly \sizeRatio$\times$ smaller and \speedupFa
 \block{References \& Acknowledgments}{
 \footnotesize
 \textbf{Key references.}
-[1] Enstad et al.\ \emph{Comparative analysis of OCR for S\'{a}mi}, NoDaLiDa 2025.
+[1] Enstad et al.\ \emph{Comparative analysis of OCR for S\'{a}mi}, NoDaLiDa 2025. 
 [2] Li et al.\ \emph{TrOCR}, AAAI 2023.
+
 [3] Shi et al.\ \emph{CRNN}, IEEE TPAMI 2017.
+
 [4] Corallo \& Varde, \emph{OCR for Amazigh}, AAAI Workshops 2023.
+
 [5] Turi, \emph{Muitalus s\'{a}miid birra}, 1910.
+
 [6] TartuNLP MT API, 2025.\\[3mm]
 
 \textbf{Acknowledgments.} A.\ Varde acknowledges grant NNF25OC0110035 (Denmark).\\[2mm]
 % \url{https://github.com/magwrap/north-sami-ocr}
 % \begin{minipage}[c]{0.48\linewidth}\centering
 \begin{center}
-  \textbf{Code:} \url{https://github.com/magwrap/north-sami-ocr} 
-  \includegraphics[width=0.41\linewidth]{figures/github-qr-code.png}
+  \textbf{Code:} \url{https://github.com/magwrap/north-sami-ocr} \\
+  \includegraphics[width=0.15\linewidth]{figures/github-qr-code.png}
 \end{center}
 % \end{minipage}
 }
