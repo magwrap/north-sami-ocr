@@ -1,0 +1,186 @@
+
+% ============================================================================
+% BACKUP / Q&A SLIDES
+% ============================================================================
+\appendix
+
+\begin{frame}[plain,noframenumbering]
+  \centering
+  \vfill
+  {\Huge\textbf{Backup slides}}\\[0.4em]
+  \large{\emph{kept for the predictable questions}}
+  \vfill
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 1 - Synthetic-only
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: ``You only tested on synthetic data $-$ does this work on real scans?''}
+  \footnotesize
+  \textbf{Honest answer: not yet validated.}
+  \medskip
+  \begin{itemize}
+    \item Entire evaluation uses synthetic renderings (Spr\r{a}kbanken + re-rendered Turi 1910)
+    \item No paper-texture, ink-bleed, skew or historical-font noise tested
+    \item OOD result tests \emph{lexical / orthographic} shift, not scan-quality robustness
+  \end{itemize}
+  \medskip
+  \textbf{Constructive next step}
+  \begin{itemize}
+    \item Build a small annotated real-scan corpus from S\'{a}mi institutional archives
+    \item Re-evaluate \texttt{ctc\_simple} \emph{and} TrOCR side-by-side on it
+    \item Likely paired with augmentation (degradation models) during training
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 2 - Oracle splitting
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: ``The splitting result is an oracle $-$ is it actually useful?''}
+  \footnotesize
+  \textbf{Yes, but the headline \splitImprovement{}\,pp will not all carry over.}
+  \medskip
+  \begin{itemize}
+    \item Splitter operates on \emph{ground truth} strings and re-renders clean images
+    \item Deployable variant must detect conjunctions on \emph{noisy} OCR output\\
+      $-$ short tokens like \textit{ja}, \textit{go} are themselves error-prone
+    \item Fallback: whitespace-based segmentation on the line image (loses less but coarser)
+  \end{itemize}
+  \medskip
+  \textbf{Why present it then?}\\
+  Establishes an upper bound and a direction:\\
+  a length-aware preprocessing stage can recover accuracy without enlarging the model.
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 3 - ImageNet failure
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: ``Why did ImageNet pretraining fail when it usually helps?''}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.46\textwidth}
+    \footnotesize
+    Two distinct signatures (see right):
+    \begin{itemize}
+      \item \textbf{VGG16/19:} train loss $0.81{\to}0.60$,
+        val CER never breaks 0.72 $-$ \emph{underfits}
+      \item \textbf{ResNet50:} train loss $0.80{\to}0.23$,
+        val CER flat at 0.73, val loss bouncing $-$ \emph{overfits}
+    \end{itemize}
+    \medskip
+    \texttt{ReduceLROnPlateau} repeatedly halved the LR with no effect,
+    so the issue is the \emph{representation}, not the step size.
+    \medskip
+    \textbf{Hypothesis:} object-level ImageNet features
+    (edges, textures, boundaries) misalign with character-stroke topology.
+    \column{0.52\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{training_curves.pdf}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 4 - n=48 power
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: ``Is 48 out-of-domain samples enough to claim better generalisation?''}
+  \footnotesize
+  \textbf{No $-$ I do not claim it conclusively.}
+  \medskip
+  \begin{itemize}
+    \item Single 1910 book, $n = \bookTestSamples{}$
+    \item Statistical power for a tight CI is too low
+    \item Phrasing in the paper: ``suggests \dots'' / ``consistent patterns''
+  \end{itemize}
+  \medskip
+  \textbf{What I do lean on}
+  \begin{itemize}
+    \item Direction agrees across CER, normalised accuracy, and the
+      \texttt{trocr\_smi\_pred\_synth} variant ranking
+    \item Effect size is large relative to the $\Delta$ CER seen between TrOCR variants
+    \item Future work: parallel out-of-domain set from $>$1 historical source,
+      bootstrapped CIs
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 5 - Why no Tesseract / Transkribus
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: ``Why not compare against Tesseract / Transkribus?''}
+  \footnotesize
+  \textbf{Scoped intentionally.}
+  \medskip
+  \begin{itemize}
+    \item Enstad et al.\ (2025) already report classical baselines
+      (Tesseract) at \alert{$>$30\% CER} on S\'{a}mi text
+    \item This thesis isolates \emph{lightweight-neural vs.\ SOTA-Transformer},
+      where the trade-off is non-obvious
+    \item Adding a known-weak classical baseline would not change the design-space conclusion
+  \end{itemize}
+  \medskip
+  \textbf{What it would buy}
+  \begin{itemize}
+    \item A complete table for institutions evaluating their existing stack
+    \item Easy follow-up; the benchmarking harness already supports adding models
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 6 - Per-character accuracy (Table V from IISA)
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: Per-character diacritic accuracy}
+  \footnotesize
+  \begin{center}
+    \begin{tabular}{@{}lrcc@{}}
+      \toprule
+      \textbf{Character} & \textbf{Count} & \textbf{ctc\_simple} & \textbf{trocr\_smi\_synth} \\
+      \midrule
+      \'{a} / \'{A} & 1473 & 90.1\% & 95.9\% \\
+      \v{c} / \v{C} &  129 & 83.7\% & 81.4\% \\
+      đ / Đ          &  191 & 79.1\% & 87.4\% \\
+      ŋ / Ŋ          &   26 & \textbf{100.0\%} & 84.6\% \\
+      \v{s} / \v{S} &  262 & 87.8\% & 93.1\% \\
+      ŧ / Ŧ          &    6 & 50.0\% & 50.0\% \\
+      \v{z} / \v{Z} &   35 & 80.0\% & 85.7\% \\
+      \midrule
+      \textbf{Overall} & 2122 & 88.3\% & 93.4\% \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \medskip
+  \begin{itemize}
+    \item TrOCR ahead overall, but \texttt{ctc\_simple} \alert{perfect on ŋ}, ahead on \v{c}
+    \item Both fail on ŧ (rarity: only 6 occurrences, visually $\approx$ t)
+    \item Common errors: \'{a}$\rightarrow$a, đ$\rightarrow$d (stroke missed)
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 7 - Failure mode examples
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: Concrete failure modes of \texttt{ctc\_simple}}
+  \footnotesize
+  \begin{tabular}{@{}p{0.96\linewidth}@{}}
+    \toprule
+    \textbf{Diacritical error} (CER $=$ 8.3\%) \\
+    \midrule
+    \includegraphics[width=\linewidth]{diacritical_errors_new.jpg} \\[0.2em]
+    GT: \textit{ođđasis eal\'{a}skahttojuvvon) Suohkana h\'{a}lddahusla\v{s}} \\
+    Pred: \textit{oddasis eal\'{a}skahttojuvvon) Duohkama h\'{a}lddahusla\v{s}} \\[0.2em]
+    \scriptsize{$-$ classic đ$\rightarrow$d stroke miss.} \\
+    \midrule
+    \textbf{Uppercase error} (CER $=$ 29.6\%) \\
+    \midrule
+    \includegraphics[width=\linewidth]{uppercase_errors.jpg} \\[0.2em]
+    \scriptsize{All-uppercase lines rare in training distribution $\rightarrow$ digit substitutions / case flips.} \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Backup 8 - Extended benchmark
+% ----------------------------------------------------------------------------
+\begin{frame}{Q: Full 11-model benchmark}
+  \centering
+  \includegraphics[width=0.9\linewidth]{benchmark_comparison2.png}\\[0.3em]
+  \scriptsize\textit{All 11 models on the \testSamples{}-sample test set.\\
+  Three pretrained CTC variants (right block) at $>$70\% CER, omitted from main table.}
+\end{frame}
